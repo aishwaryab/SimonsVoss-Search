@@ -11,5 +11,16 @@
         public override string Name { get; set; }
         public override string EntityType { get; } = "Group";
         public string Description { get; set; }
+
+        public override int FindSearchTermWeight(string searchTerm, bool isTransition = false)
+        {
+            int nameWeightForCalculation = isTransition ? NameTransistionWeight : NameWeight;
+            int descriptionWeightForCalculation = isTransition ? DescriptionTransitionWeight : DescriptionWeight;
+
+            int nameWeight = GetWeightByTermForProperty(searchTerm, Name, nameWeightForCalculation);
+            int descriptionWeight = GetWeightByTermForProperty(searchTerm, Description, descriptionWeightForCalculation);
+
+            return nameWeight + descriptionWeight;
+        }
     }
 }

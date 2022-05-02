@@ -11,13 +11,66 @@ namespace SimonsVoss_Search.BusinessLayer
         {
             string path = @"F:\SimonsVoss-Search\Data\sv_lsm_data.json";
             var jsonContent = File.ReadAllText(path);
-            _data = JsonConvert.DeserializeObject<Data>(jsonContent);
+            if (jsonContent != null)
+                _data = JsonConvert.DeserializeObject<Data>(jsonContent);
             InitDictionary();
         }
 
         public IEnumerable<Result> Search(string searchTerm)
         {
-            throw new NotImplementedException();
+            var resultsLookUp = new Dictionary<string, Result>();
+            foreach (var building in _data.Buildings)
+            {
+                int weight = building.FindSearchTermWeight(searchTerm);
+                ValidateAndPopulateResult(building, weight, resultsLookUp);
+            }
+
+            foreach (var lockInfo in _data.Locks)
+            {
+                int weight = lockInfo.FindSearchTermWeight(searchTerm);
+                ValidateAndPopulateResult(lockInfo, weight, resultsLookUp);
+
+                if (_dict.ContainsKey(lockInfo.BuildingId))
+                {
+                    var buildingInfo = _dict[lockInfo.BuildingId];
+                    weight = buildingInfo.FindSearchTermWeight(searchTerm, true);
+                    ValidateAndPopulateResult(buildingInfo, weight, resultsLookUp);
+                }
+            }
+
+            foreach (var group in _data.Groups)
+            {
+                int weight = group.FindSearchTermWeight(searchTerm);
+                ValidateAndPopulateResult(group, weight, resultsLookUp);
+            }
+
+            foreach (var medium in _data.Media)
+            {
+                int weight = medium.FindSearchTermWeight(searchTerm);
+                ValidateAndPopulateResult(medium, weight, resultsLookUp);
+
+                if (_dict.ContainsKey(medium.GroupId))
+                {
+                    var groupInfo = _dict[medium.GroupId];
+                    weight = groupInfo.FindSearchTermWeight(searchTerm, true);
+                    ValidateAndPopulateResult(groupInfo, weight, resultsLookUp);
+                }
+            }
+
+            return resultsLookUp.Values.OrderByDescending(x => x.Weight);
+        }
+
+        private void ValidateAndPopulateResult(BaseEntity baseEntity, int weight, Dictionary<string, Result> resultsLookUp)
+        {
+            if (weight > 0)
+            {
+                if (!resultsLookUp.ContainsKey(baseEntity.Id))
+                {
+                    resultsLookUp[baseEntity.Id] = new Result { Id = baseEntity.Id, Name = baseEntity.Name, Type = baseEntity.EntityType };
+                }
+
+                resultsLookUp[baseEntity.Id].Weight = Math.Max(resultsLookUp[baseEntity.Id].Weight, weight);
+            }
         }
         private void InitDictionary()
         {

@@ -16,5 +16,16 @@
         public string Owner { get; set; }
         public string Description { get; set; }
         public string SerialNumber { get; set; }
+
+        public override int FindSearchTermWeight(string searchTerm, bool isTransition = false)
+        {
+
+            int typeWeight = GetWeightByTermForProperty(searchTerm, Type, TypeWeight);
+            int descriptionWeight = GetWeightByTermForProperty(searchTerm, Description, DescriptionWeight);
+            int serialNumberWeight = GetWeightByTermForProperty(searchTerm, SerialNumber, SerialNumberWeight);
+            int ownerWeight = GetWeightByTermForProperty(searchTerm, Owner, OwnerWeight);
+
+            return typeWeight + ownerWeight + descriptionWeight + serialNumberWeight;
+        }
     }
 }

@@ -14,5 +14,18 @@
         public override string EntityType { get; } = "Building";
         public string ShortCut { get; set; }
         public string Description { get; set; }
+
+        public override int FindSearchTermWeight(string searchTerm, bool isTransition = false)
+        {
+            int shortCutWeightForCalculation = isTransition ? ShortCutTransistionWeight : ShortCutWeight;
+            int nameWeightForCalculation = isTransition ? NameTransistionWeight : NameWeight;
+            int descriptionWeightForCalculation = isTransition ? DescriptionTransitionWeight : DescriptionWeight;
+
+            int shortCutWeight = GetWeightByTermForProperty(searchTerm, ShortCut, shortCutWeightForCalculation);
+            int nameWeight = GetWeightByTermForProperty(searchTerm, Name, nameWeightForCalculation);
+            int descriptionWeight = GetWeightByTermForProperty(searchTerm, Description, descriptionWeightForCalculation);
+
+            return shortCutWeight + nameWeight + descriptionWeight;
+        }
     }
 }

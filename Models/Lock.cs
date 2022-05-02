@@ -18,5 +18,18 @@
         public string SerialNumber { get; set; }
         public string Floor { get; set; }
         public string RoomNumber { get; set; }
+
+        public override int FindSearchTermWeight(string searchTerm, bool isTransition = false)
+        {
+
+            int typeWeight = GetWeightByTermForProperty(searchTerm, Type, TypeWeight);
+            int nameWeight = GetWeightByTermForProperty(searchTerm, Name, NameWeight);
+            int descriptionWeight = GetWeightByTermForProperty(searchTerm, Description, DescriptionWeight);
+            int serialNumberWeight = GetWeightByTermForProperty(searchTerm, SerialNumber, SerialNumberWeight);
+            int floorWeight = GetWeightByTermForProperty(searchTerm, Floor, FloorWeight);
+            int roomNumberWeight = GetWeightByTermForProperty(searchTerm, RoomNumber, RoomNumberWeight);
+
+            return typeWeight + nameWeight + descriptionWeight + serialNumberWeight + floorWeight + roomNumberWeight;
+        }
     }
 }
