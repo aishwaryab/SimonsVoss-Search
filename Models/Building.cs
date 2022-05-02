@@ -1,10 +1,11 @@
 ﻿namespace SimonsVoss_Search.Models
 {
-    public class Building
+    public class Building : BaseEntity
     {
-        public string Id { get; set; }
+        public override string Id { get; set; }
+        public override string Name { get; set; }
+        public override string EntityType { get; } = "Building";
         public string ShortCut { get; set; }
-        public string Name { get; set; }
         public string Description { get; set; }
     }
 }
