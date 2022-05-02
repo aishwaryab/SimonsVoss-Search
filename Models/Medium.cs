@@ -1,6 +1,6 @@
 ﻿namespace SimonsVoss_Search.Models
 {
-    public class Media
+    public class Medium
     {
         public string Id { get; set; }
         public string GroupId { get; set; }
