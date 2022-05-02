@@ -1,0 +1,41 @@
+﻿<html>
+<head>
+    <script type="text/javascript">
+
+        var apiPath = 'http://localhost:5106/api'
+
+        function getSearchResults() {
+            var input = document.getElementById("searchTxt").value;
+            if (!input) {
+                alert('No search term provided')
+                return false
+            }
+            var ul = document.getElementById("results");
+            ul.innerHTML = '';
+            fetch(apiPath + '/Search?searchTerm=' + input).then(response => {
+                response.json().then(data => {
+                    for (var i = 0; i < data.length; i++) {
+                        var li = document.createElement("li")
+                        li.innerText = data[i].name + '(Type: ' + data[i].type + ', Weight: ' + data[i].weight + ')'
+                        ul.appendChild(li)
+                    }
+                })
+            }).catch(() => alert('Something went wrong !!!'))
+            return false
+        }
+
+    </script>
+</head>
+<body>
+    <h2>Results</h2>
+
+    <form onsubmit="event.preventDefault(); getSearchResults();">
+        <input type="text" id="searchTxt" placeholder="Search.." title="Search">
+        <button type="submit" id="searchBtn">Search</button>
+    </form>
+
+    <ul id="results">
+    </ul>
+
+</body>
+</html>
